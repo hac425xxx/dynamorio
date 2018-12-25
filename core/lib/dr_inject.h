@@ -140,6 +140,30 @@ dr_inject_prepare_to_exec(const char *app_name, const char **app_cmdline, void *
 
 DR_EXPORT
 /**
+ * Prepare to ptrace(ATTACH) the provided process.  Use
+ * dr_inject_process_inject() to perform the ptrace(ATTACH) under DR.
+ *
+ * \note Only available on Linux.
+ *
+ * \param[in]   pid            The pid for the target executable. The caller
+ *                             must ensure this data is valid until the
+ *                             inject data is disposed.
+ *
+ * \param[in]   app_name       The path to the target executable.  The caller
+ *                             must ensure this data is valid until the
+ *                             inject data is disposed.
+ *
+ * \param[out]  data           An opaque pointer that should be passed to
+ *                             subsequent dr_inject_* routines to refer to
+ *                             this process.
+ * \return  Always return true because we just prepare dr_inject_info_t for 
+ *          future attach.
+ */
+int
+dr_inject_prepare_to_attach(process_id_t pid, const char *appname, void **data OUT);
+
+DR_EXPORT
+/**
  * Use the ptrace system call to inject into the targetted process.  Must be
  * called before dr_inject_process_inject().  Does not work with
  * dr_inject_prepare_to_exec().

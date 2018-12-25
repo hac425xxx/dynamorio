@@ -1035,6 +1035,7 @@ _tmain(int argc, TCHAR *targv[])
     bool use_ptrace = false;
     bool kill_group = false;
 #    endif
+    process_id_t attach_pid = 0;
     char *app_name = NULL;
     char full_app_name[MAXIMUM_PATH];
     const char **app_argv;
@@ -1181,9 +1182,9 @@ _tmain(int argc, TCHAR *targv[])
             process_id_t pid = strtoul(pid_str, NULL, 10);
             if (pid == ULONG_MAX)
                 usage(false, "-attach expects an integer pid");
-            if (pid != 0)
-                usage(false, "attaching to running processes is not yet implemented");
+            attach_pid = pid;
             use_ptrace = true;
+            limit = -1;
             /* FIXME: use pid below to attach. */
             continue;
         }
@@ -1442,7 +1443,18 @@ done_with_options:
     /* Support no app if the tool has its own frontend, under the assumption
      * it may have post-processing or other features.
      */
-    if (i < argc || native_tool[0] == '\0') {
+    if (attach_pid != 0) {
+        char *exe = malloc(PATH_MAX);
+        char *exe_str = malloc(PATH_MAX);
+        ssize_t size;
+        sprintf(exe_str, "/proc/%u/exe", attach_pid);
+        size = readlink(exe_str, exe, PATH_MAX);
+        exe[size] = 0;
+        app_name = strdup(exe);
+        free(exe);
+        free(exe_str);
+    }
+    if ( attach_pid == 0 && (i < argc || native_tool[0] == '\0')) {
 #    endif
         if (i >= argc)
             usage(false, "%s", "no app specified");
@@ -1644,6 +1656,8 @@ done_with_options:
     if (limit == 0 && !use_ptrace && !kill_group) {
         info("will exec %s", app_name);
         errcode = dr_inject_prepare_to_exec(app_name, app_argv, &inject_data);
+    } else if(attach_pid != 0) {
+        errcode = dr_inject_prepare_to_attach(attach_pid, app_name, &inject_data);
     } else
 #    endif /* UNIX */
     {
