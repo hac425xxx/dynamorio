@@ -1425,7 +1425,8 @@ module_relocate_symbol(ELF_REL_TYPE *rel, os_privmod_data_t *pd, bool is_rela)
     name = (char *)pd->os_data.dynstr + sym->st_name;
 
 #ifdef CLIENT_INTERFACE
-    if (INTERNAL_OPTION(private_loader) && privload_redirect_sym(r_addr, name))
+    if (INTERNAL_OPTION(private_loader) &&
+        privload_redirect_sym((ptr_uint_t *)r_addr, name))
         return;
 #endif
 

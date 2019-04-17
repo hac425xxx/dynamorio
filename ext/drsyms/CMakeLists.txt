@@ -43,7 +43,7 @@ endif ()
 
 if (ARM)
   if (ANDROID)
-    set(ARCH "-android")
+    set(ARCH "-android-arm")
   else ()
     set(ARCH "-arm")
     # XXX i#1501: to support both arm-linux-gnueabi and arm-linux-gnueabi,
@@ -59,7 +59,11 @@ if (ARM)
 endif()
 
 if (AARCH64)
-  set(ARCH "-aarch64")
+  if (ANDROID)
+    set(ARCH "-android-aarch64")
+  else ()
+    set(ARCH "-aarch64")
+  endif ()
 endif ()
 
 # we need libc b/c our elftoolchain libraries use it
