@@ -6669,6 +6669,12 @@ dr_redirect_execution(dr_mcontext_t *mcontext)
             dcontext->next_tag = canonicalize_pc_target(dcontext, mcontext->pc);
     }
 #    endif
+
+#if defined(AARCH64)
+    mcontext->r28 = dcontext->local_state->spill_space.reg_stolen;
+#endif
+
+
     transfer_to_dispatch(dcontext, dr_mcontext_as_priv_mcontext(mcontext),
                          true /*full_DR_state*/);
     /* on success we won't get here */
