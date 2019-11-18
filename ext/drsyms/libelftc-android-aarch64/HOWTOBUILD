@@ -1,0 +1,21 @@
+https://sourceforge.net/projects/elftoolchain/files/Sources/elftoolchain-0.7.1/
+
+Now build 64-bit:
+export CC=/home/hac425/workspace/WLAFL-plus-plus/android-ndk-r14b/arm64-toolchain/bin/aarch64-linux-android-gcc
+export LD=/home/hac425/workspace/WLAFL-plus-plus/android-ndk-r14b/arm64-toolchain/bin/aarch64-linux-android-ld
+export AR=/home/hac425/workspace/WLAFL-plus-plus/android-ndk-r14b/arm64-toolchain/bin/aarch64-linux-android-ar
+export RANLIB=/home/hac425/workspace/WLAFL-plus-plus/android-ndk-r14b/arm64-toolchain/bin/aarch64-linux-android-ranlib
+cd common
+cp /home/hac425/workspace/WLAFL-plus-plus/dynamorio/ext/drsyms/libelftc-android-aarch64/native-elf-format.h native-elf-format.h
+cd ../libelf
+CFLAGS="-O2 -g -fPIC" pmake libelf.a
+cd ../libdwarf
+CFLAGS="-O2 -g -fPIC" pmake libdwarf.a
+cd ../libelftc
+CFLAGS="-O2 -g -fPIC" pmake libelftc.a
+
+
+cp libelf/libelf.a ../dynamorio/ext/drsyms/libelftc-android-aarch64/lib64
+cp libdwarf/libdwarf.a ../dynamorio/ext/drsyms/libelftc-android-aarch64/lib64
+cp libelftc/libelftc.a ../dynamorio/ext/drsyms/libelftc-android-aarch64/lib64
+
